@@ -1,0 +1,246 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: #fff;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.hero {
+  text-align: center;
+  padding: 7rem 2rem;
+  background-color: #000;
+  color: #fff;
+  height: 45vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.hero h1 {
+  font-size: 5rem;
+  font-weight: 200;
+  margin-bottom: 1rem;
+  letter-spacing: 4px;
+}
+
+.hero .tagline {
+  font-size: 1.5rem;
+  color: #69b9ff;
+  letter-spacing: 4px;
+  font-weight: 100;
+  margin-bottom: 2rem;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn {
+  padding: 1rem 4rem;
+  font-size: 1rem;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+  font-weight: 500;
+  letter-spacing: 2px;
+}
+
+.btn-primary {
+  background-color: #69b9ff;
+  color: #fff;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+.btn-primary:hover {
+  background-color: #69b9ff;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.hero + .how-it-works {
+    margin-top: 7rem; /* Adjust the margin as needed */
+  }
+
+/* How it works section */
+.how-it-works, .contact-form {
+  background-color: #000;
+  color: #fff;
+  width: 100%;
+  padding: 6.5rem 2rem;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 50px;
+}
+
+.how-it-works h2, .contact-form h2 {
+  font-size: 2.5rem;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  letter-spacing: 4px;
+}
+
+.how-it-works .subtitle {
+  font-size: 1rem;
+  color: #808080;
+  margin-bottom: 3rem;
+  letter-spacing: 2px;
+}
+
+.steps {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  padding: 0;
+}
+
+.step {
+  flex: 1;
+  min-width: 250px;
+  max-width: 300px;
+}
+
+.icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #3498db;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.step h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.step p {
+  font-size: 0.9rem;
+  color: #fff;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .steps {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step {
+    max-width: 100%;
+  }
+
+  .hero h1 {
+    font-size: 4rem;
+  }
+
+  .hero .tagline {
+    font-size: 1.5rem;
+  }
+
+  .btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+  }
+
+  .how-it-works, .contact-form {
+    padding: 4rem 1rem;
+  }
+}
+
+/* Contact form */
+.contact-form {
+  margin: 2rem 0;
+  padding: 2rem 0;
+}
+
+.contact-form h2 {
+  color: #fff;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.contact-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.contact-form input, .contact-form textarea, .contact-form button {
+  padding: 0.75rem;
+  font-size: 1rem;
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.contact-form input:focus, .contact-form textarea:focus {
+  border-color: #69b9ff;
+  outline: none;
+}
+
+.contact-form textarea {
+  min-height: 120px;
+}
+
+.contact-form button {
+  padding: 0.75rem;
+  font-size: 1rem;
+  background-color: #69b9ff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  font-family: 'Open Sans', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.contact-form button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+.contact-form button:focus {
+  outline: none;
+  box-shadow: 0 0 5px #3498db;
+}
+

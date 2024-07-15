@@ -1,0 +1,119 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #000;
+  color: #fff;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+}
+
+.logo a {
+  color: #3498db;
+  text-decoration: none;
+  margin-right: 35px;
+}
+
+.beta-tag {
+  font-size: 0.9rem;
+  background-color: #404040;
+  color: #f39c12;
+  padding: 2px 5px;
+  border-radius: 3px;
+  margin-left: 5px;
+  font-weight: 600;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+nav a:hover,
+nav a.active {
+  color: #3498db;
+}
+
+/* Existing styles... */
+
+.how-it-works {
+  padding: 4rem 2rem;
+  background-color: #f8f9fa;
+  color: #333;
+  text-align: center;
+}
+
+.how-it-works h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+  letter-spacing: 4px;
+}
+
+.how-it-works .subtitle {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 3rem;
+  letter-spacing: 2px;
+}
+
+.steps {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.step {
+  flex: 1;
+  min-width: 250px;
+  max-width: 300px;
+}
+
+.icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #3498db;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+}
+
+.step h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.step p {
+  font-size: 0.9rem;
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .steps {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .step {
+    max-width: 100%;
+  }
+}

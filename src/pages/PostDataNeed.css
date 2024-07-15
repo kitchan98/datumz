@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #121212;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.post-data-need {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #1f1f1f;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+  color: #3498db;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+input, textarea, select, button {
+  padding: 0.75rem;
+  font-size: 1rem;
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+  font-family: 'Open Sans', sans-serif; /* Ensure font is applied */
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+textarea {
+  min-height: 100px;
+}
+
+button {
+  padding: 0.75rem;
+  font-size: 1rem;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: 'Open Sans', sans-serif; /* Ensure font is applied */
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 5px #3498db;
+}
