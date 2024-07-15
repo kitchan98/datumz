@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/kitchan98/datumz.git/static/css/main.8179f150.css",
+    "main.js": "/kitchan98/datumz.git/static/js/main.b5dd38d9.js",
+    "index.html": "/kitchan98/datumz.git/index.html",
+    "main.8179f150.css.map": "/kitchan98/datumz.git/static/css/main.8179f150.css.map",
+    "main.b5dd38d9.js.map": "/kitchan98/datumz.git/static/js/main.b5dd38d9.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8179f150.css",
+    "static/js/main.b5dd38d9.js"
+  ]
+}
