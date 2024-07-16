@@ -15,7 +15,7 @@
   "devDependencies": {
     "gh-pages": "^6.1.1"
   },
-  "homepage": "https://kitchan98.github.io/datumz",
+  "homepage": "https://kitchan98.github.io/",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
