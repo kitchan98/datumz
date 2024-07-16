@@ -5,6 +5,7 @@ import PostDataNeed from './pages/PostDataNeed';
 import RegisterFreelancer from './pages/RegisterFreelancer';
 import './styles/global.css';
 import Header from './components/Header';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/register-freelancer" element={<RegisterFreelancer />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );
