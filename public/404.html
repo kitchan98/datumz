@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0; URL='/datumz'" />
+    <script>
+      // Redirect to the correct path in case the URL is not handled by the client-side router
+      var path = window.location.pathname;
+      if (path.startsWith('/datumz')) {
+        window.location.replace('/datumz' + path);
+      } else {
+        window.location.replace('/datumz');
+      }
+    </script>
+  </head>
+  <body>
+    Redirecting...
+  </body>
+</html>
