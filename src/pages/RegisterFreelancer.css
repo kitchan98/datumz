@@ -1,33 +1,163 @@
 .register-freelancer {
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-  }
-  
-  h2 {
-    color: #3498db;
-    margin-bottom: 1rem;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  input, textarea {
-    padding: 0.5rem;
-    font-size: 1rem;
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
-    border-radius: 4px;
-  }
-  
-  textarea {
-    min-height: 100px;
-  }
-  
-  button {
-    cursor: pointer;
-  }
+  max-width: 480px;
+  width: 100%;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  background-color: #ffffff;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.register-freelancer h2 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.register-freelancer .social-sign-in {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.register-freelancer .social-sign-in button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-freelancer .social-sign-in button svg {
+  margin-right: 0.5rem;
+}
+
+.register-freelancer .facebook-btn {
+  background-color: #3b5998;
+  color: white;
+}
+
+.register-freelancer .linkedin-btn {
+  background-color: #0077b5;
+  color: white;
+}
+
+.register-freelancer .github-btn {
+  background-color: #333;
+  color: white;
+}
+
+.register-freelancer .google-btn {
+  background-color: #fff;
+  color: #757575;
+  border: 1px solid #ddd;
+}
+
+.register-freelancer .divider {
+  text-align: center;
+  margin: 2rem 0;
+  color: #7f8c8d;
+  position: relative;
+}
+
+.register-freelancer .divider::before,
+.register-freelancer .divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background-color: #ecf0f1;
+}
+
+.register-freelancer .divider::before {
+  left: 0;
+}
+
+.register-freelancer .divider::after {
+  right: 0;
+}
+
+.register-freelancer form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.register-freelancer input {
+  padding: 0.875rem;
+  font-size: 1rem;
+  background-color: #f7f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.register-freelancer input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.register-freelancer .password-input {
+  position: relative;
+}
+
+.register-freelancer .password-input input {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.register-freelancer .password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+.register-freelancer .btn-primary {
+  background-color: #3498db;
+  color: white;
+  padding: 0.875rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-freelancer .btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.auth-component .auth-switch {
+  margin-top: 1rem;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.auth-component .switch-btn {
+  background: none;
+  border: none;
+  color: #3498db;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.auth-component .switch-btn:hover {
+  text-decoration: underline;
+}

@@ -2,163 +2,164 @@ import React, { useState } from 'react';
 import './PostDataNeed.css';
 
 const PostDataNeed = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    budget: '',
-    type: 'image', // default to image
-    quantity: 1,
-    quality: '',
-    format: '',
-    deliveryMethod: '',
-    geographicalScope: '',
-    frequency: 'one-time', // default to one-time
-    content: '',
-    details: '',
-    sensitiveDetails: '',
-  });
+const [formData, setFormData] = useState({
+  description: '',
+  category: '',
+  budget: '',
+  type: 'image',
+  quantity: 1,
+  quality: '',
+  format: '',
+  deliveryMethod: '',
+  geographicalScope: '',
+  frequency: 'one-time',
+  details: '',
+  sampleFile: null,
+});
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+const handleChange = (e) => {
+  const { name, value, type, files } = e.target;
+  setFormData(prevData => ({
+    ...prevData,
+    [name]: type === 'file' ? files[0] : value,
+  }));
+};
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
-  };
+const handleSubmit = (e) => {
+  e.preventDefault();
+  // Handle form submission logic here
+  console.log(formData);
+};
 
-  return (
-    <div className="post-data-need">
-      <h2>Post Your Data Need</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          placeholder="Title"
-          required
-        />
+return (
+  <div className="pdn-container">
+    <h2 className="pdn-heading">What Is Your Data Requirement?</h2>
+    <form onSubmit={handleSubmit} className="pdn-form">
+      <div className="pdn-form-group">
+        <label htmlFor="description" className="pdn-label">Description</label>
         <textarea
+          id="description"
           name="description"
           value={formData.description}
           onChange={handleChange}
-          placeholder="Description"
+          placeholder="Describe your data need"
           required
+          className="pdn-textarea"
         ></textarea>
-        <input
-          type="text"
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          placeholder="Category"
-          required
-        />
-        <input
-          type="number"
-          name="budget"
-          value={formData.budget}
-          onChange={handleChange}
-          placeholder="Budget"
-          required
-        />
-        <select
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          required
-        >
-          <option value="image">Image</option>
-          <option value="video">Video</option>
-        </select>
-        <input
-          type="number"
-          name="quantity"
-          value={formData.quantity}
-          onChange={handleChange}
-          placeholder="Quantity"
-          required
-        />
-        <input
-          type="text"
-          name="quality"
-          value={formData.quality}
-          onChange={handleChange}
-          placeholder="Quality  (e.g. 250x400, 4K)"
-          required
-        />
-        {formData.type === 'video' && (
+      </div>
+
+      <div className="pdn-form-row">
+        <div className="pdn-form-group">
+          <label htmlFor="category" className="pdn-label">Category</label>
+          <input
+            type="text"
+            id="category"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            placeholder="e.g., Marketing, Research"
+            required
+            className="pdn-input"
+          />
+        </div>
+        <div className="pdn-form-group">
+          <label htmlFor="budget" className="pdn-label">Budget</label>
           <input
             type="number"
-            name="framesPerSecond"
-            value={formData.framesPerSecond}
+            id="budget"
+            name="budget"
+            value={formData.budget}
             onChange={handleChange}
-            placeholder="Frames per second"
+            placeholder="Enter amount"
+            required
+            className="pdn-input"
           />
-        )}
-        <input
-          type="text"
-          name="format"
-          value={formData.format}
-          onChange={handleChange}
-          placeholder="Format  (e.g. jpg, png, mov)"
-          required
-        />
-        <input
-          type="text"
-          name="deliveryMethod"
-          value={formData.deliveryMethod}
-          onChange={handleChange}
-          placeholder="Delivery Method"
-          required
-        />
-        <input
-          type="text"
-          name="geographicalScope"
-          value={formData.geographicalScope}
-          onChange={handleChange}
-          placeholder="Geographical Scope"
-          required
-        />
-        <select
-          name="frequency"
-          value={formData.frequency}
-          onChange={handleChange}
-          required
-        >
-          <option value="one-time">One-time</option>
-          <option value="daily">Daily</option>
-        </select>
+        </div>
+      </div>
+
+      <div className="pdn-form-row">
+        <div className="pdn-form-group">
+          <label htmlFor="type" className="pdn-label">Type</label>
+          <select
+            id="type"
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            required
+            className="pdn-select"
+          >
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
+        <div className="pdn-form-group">
+          <label htmlFor="quantity" className="pdn-label">Quantity</label>
+          <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            value={formData.quantity}
+            onChange={handleChange}
+            placeholder="Number of items"
+            required
+            className="pdn-input"
+          />
+        </div>
+      </div>
+
+      <div className="pdn-form-group">
+        <label className="pdn-label">Frequency</label>
+        <div className="pdn-radio-group">
+          {['one-time', 'daily', 'weekly'].map((freq) => (
+            <label key={freq} className="pdn-radio-label">
+              <input
+                type="radio"
+                name="frequency"
+                value={freq}
+                checked={formData.frequency === freq}
+                onChange={handleChange}
+                required
+                className="pdn-radio-input"
+              />
+              <span className="pdn-radio-custom"></span>
+              {freq.charAt(0).toUpperCase() + freq.slice(1)}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="pdn-form-group">
+        <label htmlFor="details" className="pdn-label">Details</label>
         <textarea
-          name="content"
-          value={formData.content}
-          onChange={handleChange}
-          placeholder="Content of data"
-          required
-        ></textarea>
-        <textarea
+          id="details"
           name="details"
           value={formData.details}
           onChange={handleChange}
-          placeholder="Details"
+          placeholder="Provide any additional details"
           required
+          className="pdn-textarea"
         ></textarea>
-        <textarea
-          name="sensitiveDetails"
-          value={formData.sensitiveDetails}
-          onChange={handleChange}
-          placeholder="Sensitive Details (only seen after confirmed)"
-        ></textarea>
-        <button type="submit" className="btn btn-primary">Submit</button>
-      </form>
-    </div>
-  );
+      </div>
+
+      <div className="pdn-form-group">
+          <label htmlFor="sampleFile" className="pdn-label">Upload Sample {formData.type}</label>
+          <input
+            type="file"
+            id="sampleFile"
+            name="sampleFile"
+            onChange={handleChange}
+            accept={formData.type === 'image' ? 'image/*' : 'video/*'}
+            className="pdn-file-input"
+          />
+          <p className="pdn-file-info">
+            {formData.sampleFile ? `Selected file: ${formData.sampleFile.name}` : 'No file selected'}
+          </p>
+        </div>
+
+      <button type="submit" className="pdn-btn pdn-btn-primary">Submit Data Need</button>
+    </form>
+  </div>
+);
 };
 
 export default PostDataNeed;

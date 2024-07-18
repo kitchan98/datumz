@@ -22,7 +22,7 @@ body {
   padding: 7rem 2rem;
   background-color: #000;
   color: #fff;
-  height: 45vh;
+  height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -47,23 +47,35 @@ body {
 
 .cta-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 3rem;
   justify-content: center;
 }
 
 .btn {
-  padding: 1rem 4rem;
-  font-size: 1rem;
+  padding: 1rem 1rem;
+  font-size: 0.9rem;
   text-decoration: none;
-  border-radius: 5px;
   transition: background-color 0.3s, color 0.3s;
-  font-weight: 500;
-  letter-spacing: 2px;
+  font-weight: 400;
+  letter-spacing: 1px; /* Reduced letter spacing */
+  width: 250px; /* Adjusted width */
+  text-align: center;
+  white-space: nowrap;
+  overflow: visible; /* Changed from hidden to visible */
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.btn-primary {
+.cta-buttons .btn-primary {
   background-color: #69b9ff;
   color: #fff;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  align-items: center;
+  width: 250px;
 }
 
 .btn-secondary {
@@ -73,15 +85,16 @@ body {
 }
 
 .btn-primary:hover {
-  background-color: #69b9ff;
+  background-color: #4da6ff;
 }
 
 .btn-secondary:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+
 .hero + .how-it-works {
-    margin-top: 8rem; /* Adjust the margin as needed */
+    margin-top: 6.5rem; /* Adjust the margin as needed */
   }
 
 /* How it works section */
@@ -243,4 +256,3 @@ body {
   outline: none;
   box-shadow: 0 0 5px #3498db;
 }
-
