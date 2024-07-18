@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/datumz/static/css/main.98f2e665.css",
-    "main.js": "/datumz/static/js/main.88544f92.js",
+    "main.css": "/datumz/static/css/main.7a90c726.css",
+    "main.js": "/datumz/static/js/main.6541c419.js",
     "index.html": "/datumz/index.html",
-    "main.98f2e665.css.map": "/datumz/static/css/main.98f2e665.css.map",
-    "main.88544f92.js.map": "/datumz/static/js/main.88544f92.js.map"
+    "main.7a90c726.css.map": "/datumz/static/css/main.7a90c726.css.map",
+    "main.6541c419.js.map": "/datumz/static/js/main.6541c419.js.map"
   },
   "entrypoints": [
-    "static/css/main.98f2e665.css",
-    "static/js/main.88544f92.js"
+    "static/css/main.7a90c726.css",
+    "static/js/main.6541c419.js"
   ]
 }
