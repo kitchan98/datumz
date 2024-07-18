@@ -93,6 +93,7 @@
 }
 
 .register-freelancer input {
+  width: 100%;
   padding: 0.875rem;
   font-size: 1rem;
   background-color: #f7f9fa;
@@ -128,9 +129,8 @@
   font-size: 1.1rem;
 }
 
-.register-freelancer .btn-primary {
-  background-color: #3498db;
-  color: white;
+.register-freelancer .btn {
+  width: 100%;
   padding: 0.875rem;
   border: none;
   border-radius: 6px;
@@ -140,24 +140,22 @@
   transition: background-color 0.3s ease;
 }
 
+.register-freelancer .btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
 .register-freelancer .btn-primary:hover {
   background-color: #2980b9;
 }
 
-.auth-component .auth-switch {
-  margin-top: 1rem;
-  text-align: center;
-  color: #7f8c8d;
-}
-
-.auth-component .switch-btn {
-  background: none;
-  border: none;
+.register-freelancer .btn-secondary {
+  background-color: transparent;
   color: #3498db;
-  cursor: pointer;
-  font-weight: bold;
+  border: 1px solid #3498db;
+  margin-top: 1rem;
 }
 
-.auth-component .switch-btn:hover {
-  text-decoration: underline;
+.register-freelancer .btn-secondary:hover {
+  background-color: #f0f8ff;
 }
