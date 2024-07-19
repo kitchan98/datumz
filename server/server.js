@@ -1,44 +1,76 @@
 // server.js
 const express = require('express');
-const nodemailer = require('nodemailer');
-const cors = require('cors');
 const bodyParser = require('body-parser');
-require('dotenv').config();
-
-
+const multer = require('multer');
+const path = require('path');
+const cors = require('cors');
+const mongoose = require('mongoose');
 const app = express();
+const PORT = process.env.PORT || 5001; // Changed port to 5001
+
+// Enable CORS
 app.use(cors());
+
+// Set up storage for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
+
+// Middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 3001;
+// Create uploads folder if it doesn't exist
+const fs = require('fs');
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
 
-app.post('/send-email', async (req, res) => {
-  const { name, email, message } = req.body;
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/formDataDB', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Could not connect to MongoDB...', err));
 
-  let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
+// Define a schema
+const formSchema = new mongoose.Schema({
+  description: String,
+  category: String,
+  budget: String,
+  type: String,
+  quantity: String,
+  frequency: String,
+  details: String,
+  sampleFile: String,
+});
 
-  let mailOptions = {
-    from: 'your-email@gmail.com',
-    to: 'kitchan98@gmail.com',
-    subject: `Question from ${name}`,
-    text: `From: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
-  };
+// Create a model
+const FormData = mongoose.model('FormData', formSchema);
 
+// Route to handle form submission
+app.post('/api/form-submit', upload.single('sampleFile'), async (req, res) => {
+  const formData = req.body;
+  if (req.file) {
+    formData.sampleFile = req.file.filename;
+  }
+  console.log('Received form submission:', formData);
+  
+  // Save form data to MongoDB
   try {
-    await transporter.sendMail(mailOptions);
-    res.status(200).send('Email sent successfully');
+    const form = new FormData(formData);
+    await form.save();
+    res.status(200).json({ message: 'Form submitted successfully!', formData });
   } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).send('Error sending email');
+    res.status(500).json({ message: 'Error submitting form', error });
   }
 });
 
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
