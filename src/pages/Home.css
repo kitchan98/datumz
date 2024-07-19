@@ -47,8 +47,9 @@ body {
 
 .cta-buttons {
   display: flex;
-  gap: 3rem;
+  gap: 1rem;
   justify-content: center;
+  flex-wrap: wrap; /* Allows wrapping */
 }
 
 .btn {
@@ -92,10 +93,9 @@ body {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-
 .hero + .how-it-works {
-    margin-top: 6.5rem; /* Adjust the margin as needed */
-  }
+  margin-top: 6.5rem; /* Adjust the margin as needed */
+}
 
 /* How it works section */
 .how-it-works, .contact-form {
@@ -173,21 +173,25 @@ body {
     max-width: 100%;
   }
 
+  .hero {
+    padding: 5rem 1rem;
+  }
+
   .hero h1 {
-    font-size: 4rem;
+    font-size: 3rem;
   }
 
   .hero .tagline {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   .btn {
-    padding: 0.75rem 2rem;
-    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
   }
 
   .how-it-works, .contact-form {
-    padding: 4rem 1rem;
+    padding: 3rem 1rem;
   }
 }
 

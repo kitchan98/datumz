@@ -6,13 +6,14 @@ import RegisterFreelancer from './pages/RegisterFreelancer';
 import './styles/global.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
-
+import Popup from './components/Popup'; 
 
 function App() {
   return (
     <Router>
       <div className="datumz">
         <Header />
+        <Popup />  {/* Add the Popup component here */}
         <main>
           <Routes>
             <Route path="/" element={<Home />} />

@@ -1,45 +1,45 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import emailjs from 'emailjs-com';
 import './Home.css';
 import Popup from '../components/Popup';
 
 const Home = () => {
   const [contactData, setContactData] = useState({
-    name: '',
-    email: '',
+    from_name: '',
+    reply_to: '',
     message: ''
   });
+
   const [submitStatus, setSubmitStatus] = useState('');
 
   const handleContactChange = (e) => {
     const { name, value } = e.target;
-    setContactData({
-      ...contactData,
+    setContactData(prevData => ({
+      ...prevData,
       [name]: value,
-    });
+      from_name: name === 'from_name' ? value : prevData.from_name
+    }));
   };
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
     setSubmitStatus('Sending...');
+
     try {
-      const response = await fetch('http://localhost:3001/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(contactData),
-      });
-      
-      if (response.ok) {
-        setSubmitStatus('Message sent successfully!');
-        setContactData({ name: '', email: '', message: '' });
-      } else {
-        setSubmitStatus('Failed to send message. Please try again.');
-      }
+      const result = await emailjs.sendForm(
+        'service_20cnorp',
+        'template_15jdxgq',
+        e.target,
+        'SF_Mf5rPsbaV133ly'
+      );
+
+      console.log(result.text);
+      setSubmitStatus('Message sent successfully!');
+      setContactData({ name: '', email: '', message: '' });
     } catch (error) {
       console.error('Error:', error);
-      setSubmitStatus('An error occurred. Please try again later.');
+      setSubmitStatus('Failed to send message. Please try again.');
     }
   };
 
@@ -47,7 +47,7 @@ const Home = () => {
     <div className="home">
       <Popup />
       <section className="hero">
-        <h1>DATUMX</h1>
+        <h1>DATUMZ</h1>
         <p className="tagline">GET ANY DATA YOU WANT FOR YOUR RESEARCH OR BUSINESS</p>
         <div className="cta-buttons">
           <Link to="/post-data-need" className="btn btn-primary">POST YOUR DATA NEED</Link>
@@ -91,28 +91,28 @@ const Home = () => {
         <form onSubmit={handleContactSubmit}>
           <input
             type="text"
-            name="name"
-            value={contactData.name}
+            name="from_name"
+            value={contactData.from_name}
             onChange={handleContactChange}
-            placeholder="Enter your name..."
+            placeholder="Your name (sender)"
             required
           />
           <input
             type="email"
-            name="email"
-            value={contactData.email}
+            name="reply_to"
+            value={contactData.reply_to}
             onChange={handleContactChange}
-            placeholder="Enter your email..."
+            placeholder="Your email"
             required
           />
           <textarea
             name="message"
             value={contactData.message}
             onChange={handleContactChange}
-            placeholder="Message"
+            placeholder="Your message"
             required
           ></textarea>
-          <button type="submit" className="btn btn-primary">Send Message</button>
+          <button type="submit">Send</button>
         </form>
         {submitStatus && <p>{submitStatus}</p>}
       </section>
