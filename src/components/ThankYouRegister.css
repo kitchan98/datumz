@@ -1,0 +1,54 @@
+/* ThankYouRegister.css */
+.thank-you-register {
+    max-width: 480px;
+    width: 100%;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background-color: #ffffff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .thank-you-register h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+  
+  .thank-you-register p {
+    color: #34495e;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .thank-you-register .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    margin-top: 1.5rem;
+  }
+  
+  .thank-you-register .btn-primary {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .thank-you-register .btn-primary:hover {
+    background-color: #2980b9;
+  }
+  
+  .thank-you-register .btn svg {
+    margin-right: 0.5rem;
+  }

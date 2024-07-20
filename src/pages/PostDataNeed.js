@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './PostDataNeed.css';
 
 const PostDataNeed = ({ onSubmitSuccess }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     description: '',
     category: '',
@@ -46,7 +48,8 @@ const PostDataNeed = ({ onSubmitSuccess }) => {
       })
       .then((data) => {
         console.log('Form data submitted: ', data);
-        onSubmitSuccess();
+        // Redirect to the register/login page
+        navigate('/register-datarequester');
       })
       .catch((error) => {
         console.error('Form submission error: ', error);

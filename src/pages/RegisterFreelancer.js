@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { FaFacebook, FaLinkedin, FaGithub, FaEye, FaEyeSlash } from 'react-icons/fa';
 import './RegisterFreelancer.css';
 
 const RegisterFreelancer = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,21 +19,48 @@ const RegisterFreelancer = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(isLogin ? 'Login submitted:' : 'Registration submitted:', formData);
+    
+    try {
+      // Here you would typically make an API call to register or login the user
+      // For this example, we'll simulate a successful registration/login
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
+
+      if (!isLogin) {
+        // If it's a registration, navigate to the thank you page
+        navigate('/thank-you-register');
+      } else {
+        // If it's a login, you might want to navigate to a different page
+        // For now, we'll just log a message
+        console.log('Login successful');
+      }
+    } catch (error) {
+      console.error('Error during submission:', error);
+      // Handle error (e.g., show error message to user)
+    }
   };
 
-  const handleGoogleSuccess = (credentialResponse) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     console.log('Google Sign-In Successful', credentialResponse);
+    // Here you would typically verify the Google token on your server
+    // For this example, we'll simulate a successful sign-in
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
+    navigate('/thank-you-register');
   };
 
   const handleGoogleError = () => {
     console.log('Google Sign-In Failed');
+    // Handle error (e.g., show error message to user)
   };
 
-  const handleOtherSignIn = (provider) => {
+  const handleOtherSignIn = async (provider) => {
     console.log(`${provider} Sign-In Clicked`);
+    // Here you would typically implement the sign-in logic for the chosen provider
+    // For this example, we'll simulate a successful sign-in
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
+    navigate('/thank-you-register');
   };
 
   const togglePasswordVisibility = () => {

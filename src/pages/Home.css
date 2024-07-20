@@ -47,7 +47,7 @@ body {
 
 .cta-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 2.5rem;
   justify-content: center;
   flex-wrap: wrap; /* Allows wrapping */
 }
@@ -70,7 +70,7 @@ body {
 }
 
 .cta-buttons .btn-primary {
-  background-color: #69b9ff;
+  background-color: #4da6ff;
   color: #fff;
   border: none;
   font-size: 0.9rem;
@@ -86,7 +86,7 @@ body {
 }
 
 .btn-primary:hover {
-  background-color: #4da6ff;
+  background-color: #69b9ff;
 }
 
 .btn-secondary:hover {

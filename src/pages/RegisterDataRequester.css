@@ -1,0 +1,161 @@
+.register-datarequester {
+    max-width: 480px;
+    width: 100%;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background-color: #ffffff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+  }
+  
+  .register-datarequester h2 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+  
+  .register-datarequester .social-sign-in {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .register-datarequester .social-sign-in button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .register-datarequester .social-sign-in button svg {
+    margin-right: 0.5rem;
+  }
+  
+  .register-datarequester .facebook-btn {
+    background-color: #3b5998;
+    color: white;
+  }
+  
+  .register-datarequester .linkedin-btn {
+    background-color: #0077b5;
+    color: white;
+  }
+  
+  .register-datarequester .github-btn {
+    background-color: #333;
+    color: white;
+  }
+  
+  .register-datarequester .google-btn {
+    background-color: #fff;
+    color: #757575;
+    border: 1px solid #ddd;
+  }
+  
+  .register-datarequester .divider {
+    text-align: center;
+    margin: 2rem 0;
+    color: #7f8c8d;
+    position: relative;
+  }
+  
+  .register-datarequester .divider::before,
+  .register-datarequester .divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: #ecf0f1;
+  }
+  
+  .register-datarequester .divider::before {
+    left: 0;
+  }
+  
+  .register-datarequester .divider::after {
+    right: 0;
+  }
+  
+  .register-datarequester form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  
+  .register-datarequester input {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 1rem;
+    background-color: #f7f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .register-datarequester input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  }
+  
+  .register-datarequester .password-input {
+    position: relative;
+  }
+  
+  .register-datarequester .password-input input {
+    width: 100%;
+    padding-right: 2.5rem;
+  }
+  
+  .register-datarequester .password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+  }
+  
+  .register-datarequester .btn {
+    width: 100%;
+    padding: 0.875rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .register-datarequester .btn-primary {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .register-datarequester .btn-primary:hover {
+    background-color: #2980b9;
+  }
+  
+  .register-datarequester .btn-secondary {
+    background-color: transparent;
+    color: #3498db;
+    border: 1px solid #3498db;
+    margin-top: 1rem;
+  }
+  
+  .register-datarequester .btn-secondary:hover {
+    background-color: #f0f8ff;
+  }
