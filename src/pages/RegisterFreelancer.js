@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { FaFacebook, FaLinkedin, FaGithub, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { sendNotificationEmail } from '../services/emailService';
 import './RegisterFreelancer.css';
 
 const RegisterFreelancer = () => {
@@ -14,53 +15,85 @@ const RegisterFreelancer = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleRegistration = async (userData) => {
+    try {
+      localStorage.setItem('user', JSON.stringify(userData));
+      await sendNotificationEmail('New User Registration (Freelancer)', userData.email, userData.name);
+      navigate('/thank-you-register');
+    } catch (error) {
+      console.error('Error during registration process:', error);
+      setError('An error occurred during registration. Please try again.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(isLogin ? 'Login submitted:' : 'Registration submitted:', formData);
-    
+    setError(null);
+    const endpoint = isLogin ? '/api/login' : '/api/register';
     try {
-      // Here you would typically make an API call to register or login the user
-      // For this example, we'll simulate a successful registration/login
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error(isLogin ? 'Failed to login' : 'Failed to register user');
+      }
+
+      const data = await response.json();
+      console.log(isLogin ? 'Login successful:' : 'Registration successful:', data);
 
       if (!isLogin) {
-        // If it's a registration, navigate to the thank you page
-        navigate('/thank-you-register');
+        await handleRegistration({ userId: data.userId, email: formData.email, name: formData.name });
       } else {
-        // If it's a login, you might want to navigate to a different page
-        // For now, we'll just log a message
-        console.log('Login successful');
+        navigate('/dashboard'); // or wherever you want to redirect after login
       }
     } catch (error) {
-      console.error('Error during submission:', error);
-      // Handle error (e.g., show error message to user)
+      console.error(isLogin ? 'Error during login:' : 'Error during registration:', error);
+      setError(isLogin ? 'Login failed. Please try again.' : 'Registration failed. Please try again.');
     }
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
-    console.log('Google Sign-In Successful', credentialResponse);
-    // Here you would typically verify the Google token on your server
-    // For this example, we'll simulate a successful sign-in
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
-    navigate('/thank-you-register');
+    setError(null);
+    try {
+      const response = await fetch('http://localhost:5001/api/verify-google-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: credentialResponse.credential }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to verify Google token: ${response.status} ${response.statusText}`);
+      }
+
+      const userData = await response.json();
+      await handleRegistration(userData);
+    } catch (error) {
+      console.error('Error during Google sign-in:', error);
+      setError('Google sign-in failed. Please try again.');
+    }
   };
 
   const handleGoogleError = () => {
     console.log('Google Sign-In Failed');
-    // Handle error (e.g., show error message to user)
+    setError('Google sign-in failed. Please try again.');
   };
 
   const handleOtherSignIn = async (provider) => {
     console.log(`${provider} Sign-In Clicked`);
-    // Here you would typically implement the sign-in logic for the chosen provider
-    // For this example, we'll simulate a successful sign-in
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
-    navigate('/thank-you-register');
+    setError(`${provider} sign-in is not implemented yet.`);
   };
 
   const togglePasswordVisibility = () => {
@@ -69,12 +102,14 @@ const RegisterFreelancer = () => {
 
   const toggleLoginRegister = () => {
     setIsLogin(!isLogin);
+    setError(null);
   };
 
   return (
-    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
       <div className="register-freelancer">
         <h2>{isLogin ? 'Login to Your Account' : 'Join Our Freelancer Community'}</h2>
+        {error && <div className="error-message">{error}</div>}
         <div className="social-sign-in">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PostDataNeed.css';
+import { sendNotificationEmail } from '../services/emailService';
 
 const PostDataNeed = ({ onSubmitSuccess }) => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
     description: '',
     category: '',
@@ -18,6 +20,16 @@ const PostDataNeed = ({ onSubmitSuccess }) => {
     details: '',
     sampleFile: null,
   });
+
+  useEffect(() => {
+    const storedUserData = localStorage.getItem('user');
+    if (storedUserData) {
+      setUserData(JSON.parse(storedUserData));
+    } else {
+      // If no user data is found, redirect to login page
+      navigate('/register-datarequester');
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -36,6 +48,11 @@ const PostDataNeed = ({ onSubmitSuccess }) => {
       }
     }
 
+    // Add user data to the form data
+    if (userData) {
+      formDataToSend.append('userData', JSON.stringify(userData));
+    }
+
     fetch('http://localhost:5001/api/form-submit', {
       method: 'POST',
       body: formDataToSend,
@@ -46,10 +63,10 @@ const PostDataNeed = ({ onSubmitSuccess }) => {
         }
         return response.json();
       })
-      .then((data) => {
+      .then(async (data) => {
         console.log('Form data submitted: ', data);
-        // Redirect to the register/login page
-        navigate('/register-datarequester');
+        await sendNotificationEmail('New Data Posted');
+        navigate('/thank-you-submit');
       })
       .catch((error) => {
         console.error('Form submission error: ', error);
@@ -84,13 +101,13 @@ const PostDataNeed = ({ onSubmitSuccess }) => {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              placeholder="e.g., Marketing, Research"
+              placeholder="e.g., Biotech, Retail, Finance"
               required
               className="pdn-input"
             />
           </div>
           <div className="pdn-form-group">
-            <label htmlFor="budget" className="pdn-label">Budget</label>
+            <label htmlFor="budget" className="pdn-label">Budget (£)</label>
             <input
               type="number"
               id="budget"
@@ -137,7 +154,7 @@ const PostDataNeed = ({ onSubmitSuccess }) => {
         <div className="pdn-form-group">
           <label className="pdn-label">Frequency</label>
           <div className="pdn-radio-group">
-            {['one-time', 'daily', 'weekly'].map((freq) => (
+            {['one-time', 'periodic', 'usage-based'].map((freq) => (
               <label key={freq} className="pdn-radio-label">
                 <input
                   type="radio"

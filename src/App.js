@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import emailjs from 'emailjs-com';
 import Home from './pages/Home';
 import PostDataNeed from './pages/PostDataNeed';
 import RegisterFreelancer from './pages/RegisterFreelancer';
@@ -9,14 +10,18 @@ import ThankYouSubmit from './components/ThankYouSubmit';
 import './styles/global.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import Popup from './components/Popup'; 
+import Popup from './components/Popup';
 
 function App() {
+  useEffect(() => {
+    emailjs.init("SF_Mf5rPsbaV133ly");
+  }, []);
+
   return (
     <Router>
       <div className="datumz">
         <Header />
-        <Popup /> 
+        <Popup />
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
