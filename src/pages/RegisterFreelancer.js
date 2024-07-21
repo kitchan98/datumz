@@ -55,7 +55,7 @@ const RegisterDataRequester = () => {
             if (!isLogin) {
                 await handleRegistration({ userId: data.userId, email: formData.email, name: formData.name });
             } else {
-                navigate('/dashboard'); // or wherever you want to redirect after login
+                navigate('/post-data-need'); // or wherever you want to redirect after login
             }
         } catch (error) {
             console.error(isLogin ? 'Error during login:' : 'Error during registration:', error);
@@ -104,7 +104,6 @@ const RegisterDataRequester = () => {
         <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
             <div className="register-datarequester">
                 <h2>{isLogin ? 'Login to Your Account' : 'Sign Up for an Account'}</h2>
-                {error && <div className="error-message">{error}</div>}
                 <div className="social-sign-in">
                     <GoogleLogin
                         onSuccess={handleGoogleSuccess}
@@ -113,6 +112,7 @@ const RegisterDataRequester = () => {
                     />
                 </div>
                 <div className="divider">Or</div>
+                {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     {!isLogin && (
                         <input

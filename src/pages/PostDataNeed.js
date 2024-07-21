@@ -66,7 +66,7 @@ const PostDataNeed = ({ onSubmitSuccess }) => {
       .then(async (data) => {
         console.log('Form data submitted: ', data);
         await sendNotificationEmail('New Data Posted');
-        navigate('/thank-you-submit');
+        navigate('/register-datarequester');
       })
       .catch((error) => {
         console.error('Form submission error: ', error);

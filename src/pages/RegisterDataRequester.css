@@ -159,3 +159,8 @@
   .register-datarequester .btn-secondary:hover {
     background-color: #f0f8ff;
   }
+
+  .error-message {
+    color: red;
+    margin-bottom: 10px;
+}

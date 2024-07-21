@@ -25,7 +25,7 @@ const RegisterDataRequester = () => {
         try {
             localStorage.setItem('user', JSON.stringify(userData));
             await sendNotificationEmail('New User Registration (Data Requester)', userData.email, userData.name);
-            navigate('/thank-you-register');
+            navigate('/thank-you-submit');
         } catch (error) {
             console.error('Error during registration process:', error);
             setError('An error occurred during registration. Please try again.');
@@ -35,7 +35,6 @@ const RegisterDataRequester = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-        localStorage.clear();
         const endpoint = isLogin ? '/api/login' : '/api/register';
         try {
             const response = await fetch(endpoint, {
@@ -56,11 +55,11 @@ const RegisterDataRequester = () => {
             if (!isLogin) {
                 await handleRegistration({ userId: data.userId, email: formData.email, name: formData.name });
             } else {
-                navigate('/dashboard'); // or wherever you want to redirect after login
+                navigate('/thank-you-submit'); // or wherever you want to redirect after login
             }
         } catch (error) {
             console.error(isLogin ? 'Error during login:' : 'Error during registration:', error);
-            setError(isLogin ? 'Login failed. Please try again.' : 'Registration failed. Please try again.');
+            setError(error.message);
         }
     };
 
@@ -105,7 +104,6 @@ const RegisterDataRequester = () => {
         <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
             <div className="register-datarequester">
                 <h2>{isLogin ? 'Login to Your Account' : 'Sign Up for an Account'}</h2>
-                {error && <div className="error-message">{error}</div>}
                 <div className="social-sign-in">
                     <GoogleLogin
                         onSuccess={handleGoogleSuccess}
@@ -114,6 +112,7 @@ const RegisterDataRequester = () => {
                     />
                 </div>
                 <div className="divider">Or</div>
+                {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
                     {!isLogin && (
                         <input
