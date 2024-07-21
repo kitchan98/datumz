@@ -7,6 +7,7 @@ import RegisterFreelancer from './pages/RegisterFreelancer';
 import RegisterDataRequester from './pages/RegisterDataRequester';
 import ThankYouRegister from './components/ThankYouRegister';
 import ThankYouSubmit from './components/ThankYouSubmit';
+import Wait from './components/Wait';
 import './styles/global.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -30,6 +31,7 @@ function App() {
             <Route path="/register-freelancer" element={<RegisterFreelancer />} />
             <Route path="/thank-you-register" element={<ThankYouRegister />} />
             <Route path="/thank-you-submit" element={<ThankYouSubmit />} />
+            <Route path="/wait" element={<Wait />} />
           </Routes>
         </main>
         <Footer />

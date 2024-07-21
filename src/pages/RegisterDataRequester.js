@@ -35,6 +35,7 @@ const RegisterDataRequester = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
+        localStorage.clear();
         const endpoint = isLogin ? '/api/login' : '/api/register';
         try {
             const response = await fetch(endpoint, {

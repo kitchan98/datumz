@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { FaFacebook, FaLinkedin, FaGithub, FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -8,6 +8,7 @@ import './RegisterFreelancer.css';
 
 const RegisterFreelancer = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,6 +17,14 @@ const RegisterFreelancer = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const errorMsg = params.get('error');
+    if (errorMsg) {
+      setError(decodeURIComponent(errorMsg));
+    }
+  }, [location]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -45,21 +54,45 @@ const RegisterFreelancer = () => {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        throw new Error(isLogin ? 'Failed to login' : 'Failed to register user');
+      let data;
+      try {
+        data = await response.json();
+      } catch (err) {
+        console.error('Failed to parse response as JSON:', err);
+        throw new Error('An unexpected error occurred. Please try again.');
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        if (response.status === 409 && !isLogin) {
+          // Email already exists during registration
+          throw new Error('An account with this email already exists. Please login.');
+        } else if (response.status === 404 && isLogin) {
+          // Account not found during login
+          throw new Error('Account not found. Please check your email or register.');
+        } else if (response.status === 401 && isLogin) {
+          // Invalid credentials during login
+          throw new Error('Invalid email or password. Please try again.');
+        }
+        throw new Error(data.message || (isLogin ? 'Failed to login' : 'Failed to register user'));
+      }
+
       console.log(isLogin ? 'Login successful:' : 'Registration successful:', data);
 
       if (!isLogin) {
         await handleRegistration({ userId: data.userId, email: formData.email, name: formData.name });
       } else {
-        navigate('/dashboard'); // or wherever you want to redirect after login
+        localStorage.setItem('user', JSON.stringify({ userId: data.userId, email: formData.email, name: data.name }));
+        navigate('/wait'); // or wherever you want to redirect after login
       }
     } catch (error) {
       console.error(isLogin ? 'Error during login:' : 'Error during registration:', error);
-      setError(isLogin ? 'Login failed. Please try again.' : 'Registration failed. Please try again.');
+      setError(error.message || (isLogin ? 'Login failed. Please try again.' : 'Registration failed. Please try again.'));
+
+      if (error.message.includes('already exists')) {
+        setIsLogin(true);
+      } else if (error.message.includes('not found')) {
+        setIsLogin(false);
+      }
     }
   };
 
@@ -91,10 +124,10 @@ const RegisterFreelancer = () => {
     setError('Google sign-in failed. Please try again.');
   };
 
-  const handleOtherSignIn = async (provider) => {
-    console.log(`${provider} Sign-In Clicked`);
-    setError(`${provider} sign-in is not implemented yet.`);
-  };
+  // const handleOtherSignIn = async (provider) => {
+  //   console.log(`${provider} Sign-In Clicked`);
+  //   setError(`${provider} sign-in is not implemented yet.`);
+  // };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -116,7 +149,7 @@ const RegisterFreelancer = () => {
             onError={handleGoogleError}
             useOneTap
           />
-          <button onClick={() => handleOtherSignIn('Facebook')} className="facebook-btn">
+          {/* <button onClick={() => handleOtherSignIn('Facebook')} className="facebook-btn">
             <FaFacebook /> Facebook
           </button>
           <button onClick={() => handleOtherSignIn('LinkedIn')} className="linkedin-btn">
@@ -124,7 +157,7 @@ const RegisterFreelancer = () => {
           </button>
           <button onClick={() => handleOtherSignIn('GitHub')} className="github-btn">
             <FaGithub /> GitHub
-          </button>
+          </button> */}
         </div>
         <div className="divider">Or</div>
         <form onSubmit={handleSubmit}>
@@ -155,9 +188,9 @@ const RegisterFreelancer = () => {
               placeholder="Password"
               required
             />
-            <button 
-              type="button" 
-              onClick={togglePasswordVisibility} 
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
               className="password-toggle"
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}

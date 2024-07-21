@@ -91,6 +91,26 @@ const User = mongoose.model('User', userSchema);
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
+
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    // Assuming you're storing hashed passwords and using bcrypt
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    res.json({ userId: user._id, name: user.name, email: user.email });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'An error occurred during login' });
+  }
+});
+
 // API Routes
 app.post('/api/register-freelancer', async (req, res) => {
   try {
@@ -214,7 +234,9 @@ app.post('/api/register', async (req, res) => {
 
     res.status(201).json({ message: 'User registered successfully', userId: user._id });
   } catch (error) {
-    console.error('Registration error:', error);
+    if (error.code === 11000) { // MongoDB duplicate key error
+      return res.status(409).json({ message: 'User already exists' });
+    }
     res.status(500).json({ message: 'Error during registration' });
   }
 });

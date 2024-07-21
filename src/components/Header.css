@@ -117,3 +117,18 @@ nav a.active {
     max-width: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav {
+    margin-top: 0.5rem;
+  }
+
+  nav a:first-child {
+    margin-left: 0;
+  }
+}

@@ -17,48 +17,23 @@
 }
 
 .register-freelancer .social-sign-in {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  display: flex;
+  justify-content: center;
   margin-bottom: 2rem;
 }
 
-.register-freelancer .social-sign-in button {
+.google-signin-wrapper {
+  width: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 0.875rem;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  align-items: center;
+  background-color: #f7f9fa; /* Match your input field background */
+  border: 1px solid #e0e0e0; /* Match your input field border */
+  border-radius: 6px; /* Match your input field border-radius */
 }
 
-.register-freelancer .social-sign-in button svg {
-  margin-right: 0.5rem;
-}
-
-.register-freelancer .facebook-btn {
-  background-color: #3b5998;
-  color: white;
-}
-
-.register-freelancer .linkedin-btn {
-  background-color: #0077b5;
-  color: white;
-}
-
-.register-freelancer .github-btn {
-  background-color: #333;
-  color: white;
-}
-
-.register-freelancer .google-btn {
-  background-color: #fff;
-  color: #757575;
-  border: 1px solid #ddd;
+.google-signin-wrapper > div {
+  transform: scale(0.9); /* Slightly reduce the size of the Google button if needed */
 }
 
 .register-freelancer .divider {
