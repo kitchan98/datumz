@@ -2,10 +2,79 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const { OAuth2Client } = require('google-auth-library');
 const bcrypt = require('bcrypt');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const { CosmosClient } = require('@azure/cosmos');
+const { BlobServiceClient } = require('@azure/storage-blob');
 require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 5001;
+
+// Middleware
+app.use(helmet());
+app.use(cors({ origin: '*'}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// Azure Cosmos DB setup
+async function setupCosmosDB() {
+  const cosmosClient = new CosmosClient({
+    endpoint: process.env.COSMOS_ENDPOINT,
+    key: process.env.COSMOS_KEY
+  });
+
+  const { database } = await cosmosClient.databases.createIfNotExists({ id: process.env.COSMOS_DATABASE });
+  console.log(`Database ${database.id} created or already exists`);
+
+  const { container: freelancerContainer } = await database.containers.createIfNotExists({ id: 'freelancers' });
+  console.log(`Container ${freelancerContainer.id} created or already exists`);
+
+  const { container: formDataContainer } = await database.containers.createIfNotExists({ id: 'formdata' });
+  console.log(`Container ${formDataContainer.id} created or already exists`);
+
+  const { container: userContainer } = await database.containers.createIfNotExists({ id: 'users' });
+  console.log(`Container ${userContainer.id} created or already exists`);
+
+  return { database, freelancerContainer, formDataContainer, userContainer };
+}
+
+// Call this function before starting your server
+setupCosmosDB().then(({ database, freelancerContainer, formDataContainer, userContainer }) => {
+  // Store these in global variables or pass them to your route handlers
+  app.locals.database = database;
+  app.locals.freelancerContainer = freelancerContainer;
+  app.locals.formDataContainer = formDataContainer;
+  app.locals.userContainer = userContainer;
+
+  // Start your server here
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}).catch(error => {
+  console.error('Failed to set up Cosmos DB:', error);
+  process.exit(1);
+});
+
+// Azure Blob Storage setup
+const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
+const containerClient = blobServiceClient.getContainerClient(process.env.BLOB_CONTAINER_NAME);
+
+// Google OAuth client setup
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const oauthClient = new OAuth2Client(CLIENT_ID);
+
+// File upload middleware
+const upload = multer({ storage: multer.memoryStorage() });
 
 const sendEmailNotification = async (to, subject, html) => {
   try {
@@ -23,105 +92,50 @@ const sendEmailNotification = async (to, subject, html) => {
   }
 };
 
-const app = express();
-const PORT = process.env.PORT || 5001;
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Set up storage for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
-const upload = multer({ storage: storage });
-
-// Create uploads folder if it doesn't exist
-const fs = require('fs');
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
-}
-
-// MongoDB connection
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/datumzDB';
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Could not connect to MongoDB...', err));
-
-// Schemas
-const freelancerSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  password: String,
-  googleId: String,
-});
-
-const formSchema = new mongoose.Schema({
-  description: String,
-  category: String,
-  budget: String,
-  type: String,
-  quantity: String,
-  frequency: String,
-  details: String,
-  sampleFile: String,
-  userId: String,
-  userEmail: String,
-  userName: String
-});
-
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  googleId: String,
-});
-
-// Models
-const Freelancer = mongoose.model('Freelancer', freelancerSchema);
-const FormData = mongoose.model('FormData', formSchema);
-const User = mongoose.model('User', userSchema);
-
-// Google OAuth client setup
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const client = new OAuth2Client(CLIENT_ID);
-
-
 app.post('/api/login', async (req, res) => {
+  const userContainer = app.locals.userContainer;
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
+    const { resources: users } = await userContainer.items
+      .query({
+        query: "SELECT * FROM c WHERE c.email = @email",
+        parameters: [{ name: "@email", value: email }]
+      })
+      .fetchAll();
+
+    if (users.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    // Assuming you're storing hashed passwords and using bcrypt
+
+    const user = users[0];
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-    res.json({ userId: user._id, name: user.name, email: user.email });
+    res.json({ userId: user.id, name: user.name, email: user.email });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'An error occurred during login' });
   }
 });
 
-// API Routes
 app.post('/api/register-freelancer', async (req, res) => {
+  const freelancerContainer = app.locals.freelancerContainer;
   try {
     const { name, email, password } = req.body;
-    const existingFreelancer = await Freelancer.findOne({ email });
-    if (existingFreelancer) {
+    const { resources: existingFreelancers } = await freelancerContainer.items
+      .query({
+        query: "SELECT * FROM c WHERE c.email = @email",
+        parameters: [{ name: "@email", value: email }]
+      })
+      .fetchAll();
+
+    if (existingFreelancers.length > 0) {
       return res.status(400).json({ message: 'Freelancer already exists' });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const freelancer = new Freelancer({ name, email, password: hashedPassword });
-    await freelancer.save();
+    const { resource: newFreelancer } = await freelancerContainer.items.create({ name, email, password: hashedPassword });
     
     // Send request to email server
     fetch('http://localhost:5002/api/send-welcome-email', {
@@ -130,7 +144,7 @@ app.post('/api/register-freelancer', async (req, res) => {
       body: JSON.stringify({ email, name, type: 'freelancer' })
     });
 
-    res.status(201).json({ message: 'Freelancer registered successfully', freelancerId: freelancer._id });
+    res.status(201).json({ message: 'Freelancer registered successfully', freelancerId: newFreelancer.id });
   } catch (error) {
     console.error('Freelancer registration error:', error);
     res.status(500).json({ message: 'Error during freelancer registration' });
@@ -140,17 +154,24 @@ app.post('/api/register-freelancer', async (req, res) => {
 app.post('/api/verify-google-token-freelancer', async (req, res) => {
   const { token } = req.body;
   try {
-    const ticket = await client.verifyIdToken({
+    const ticket = await oauthClient.verifyIdToken({
       idToken: token,
       audience: CLIENT_ID,
     });
     const payload = ticket.getPayload();
     const { sub: googleId, email, name } = payload;
 
-    let freelancer = await Freelancer.findOne({ googleId });
-    if (!freelancer) {
-      freelancer = new Freelancer({ name, email, googleId });
-      await freelancer.save();
+    const { resources: existingFreelancers } = await freelancerContainer.items
+      .query({
+        query: "SELECT * FROM c WHERE c.googleId = @googleId",
+        parameters: [{ name: "@googleId", value: googleId }]
+      })
+      .fetchAll();
+
+    let freelancer;
+    if (existingFreelancers.length === 0) {
+      const { resource: newFreelancer } = await freelancerContainer.items.create({ name, email, googleId });
+      freelancer = newFreelancer;
       
       // Send request to email server
       fetch('http://localhost:5002/api/send-welcome-email', {
@@ -158,9 +179,11 @@ app.post('/api/verify-google-token-freelancer', async (req, res) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name, type: 'freelancer' })
       });
+    } else {
+      freelancer = existingFreelancers[0];
     }
 
-    res.json({ freelancerId: freelancer._id, email, name });
+    res.json({ freelancerId: freelancer.id, email: freelancer.email, name: freelancer.name });
   } catch (error) {
     console.error('Error verifying Google token for freelancer:', error);
     res.status(400).json({ error: 'Invalid token', details: error.message });
@@ -168,6 +191,10 @@ app.post('/api/verify-google-token-freelancer', async (req, res) => {
 });
 
 app.post('/api/form-submit', upload.single('sampleFile'), async (req, res) => {
+  console.log('Entering form-submit route');
+  
+  const formDataContainer = app.locals.formDataContainer;
+
   const formData = req.body;
   let userData;
   
@@ -181,20 +208,29 @@ app.post('/api/form-submit', upload.single('sampleFile'), async (req, res) => {
   }
 
   if (req.file) {
-    formData.sampleFile = req.file.filename;
+    const blobName = `${Date.now()}-${req.file.originalname}`;
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    await blockBlobClient.upload(req.file.buffer, req.file.size);
+    formData.sampleFile = blockBlobClient.url;
   }
 
   console.log('Received form submission:', formData);
   console.log('User data:', userData);
   
   try {
-    const form = new FormData({
+    const newFormData = {
       ...formData,
       userId: userData?.userId,
       userEmail: userData?.email,
       userName: userData?.name
-    });
-    await form.save();
+    };
+
+    console.log('Attempting to create new form document');
+    console.log('New form data to be inserted:', newFormData);
+
+    const { resource: newForm } = await formDataContainer.items.create(newFormData);
+
+    console.log('Form created successfully:', newForm);
 
     // Send request to email server
     if (userData?.email && userData?.name) {
@@ -205,18 +241,30 @@ app.post('/api/form-submit', upload.single('sampleFile'), async (req, res) => {
       });
     }
 
-    res.status(200).json({ message: 'Form submitted successfully!', formData });
+    res.status(200).json({ message: 'Form submitted successfully!', formId: newForm.id });
   } catch (error) {
-    console.error('Error saving to database:', error);
-    res.status(500).json({ message: 'Error submitting form', error });
+    console.error('Detailed error:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ message: 'Error submitting form', error: error.toString(), stack: error.stack });
   }
 });
 
 app.post('/api/register', async (req, res) => {
   try {
-    const { name, email } = req.body;
-    const user = new User({ name, email });
-    await user.save();
+    const { name, email, password } = req.body;
+    const { resources: existingUsers } = await userContainer.items
+      .query({
+        query: "SELECT * FROM c WHERE c.email = @email",
+        parameters: [{ name: "@email", value: email }]
+      })
+      .fetchAll();
+
+    if (existingUsers.length > 0) {
+      return res.status(409).json({ message: 'User already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const { resource: newUser } = await userContainer.items.create({ name, email, password: hashedPassword });
     
     // Send welcome email to user
     sendEmailNotification(
@@ -232,11 +280,9 @@ app.post('/api/register', async (req, res) => {
       `<h1>New User Registered</h1><p>A new user has registered:</p><p>Name: ${name}</p><p>Email: ${email}</p>`
     );
 
-    res.status(201).json({ message: 'User registered successfully', userId: user._id });
+    res.status(201).json({ message: 'User registered successfully', userId: newUser.id });
   } catch (error) {
-    if (error.code === 11000) { // MongoDB duplicate key error
-      return res.status(409).json({ message: 'User already exists' });
-    }
+    console.error('Registration error:', error);
     res.status(500).json({ message: 'Error during registration' });
   }
 });
@@ -246,17 +292,24 @@ app.post('/api/verify-google-token', async (req, res) => {
   try {
     console.log('Received token:', token);
     console.log('Using CLIENT_ID:', CLIENT_ID);
-    const ticket = await client.verifyIdToken({
+    const ticket = await oauthClient.verifyIdToken({
       idToken: token,
       audience: CLIENT_ID,
     });
     const payload = ticket.getPayload();
     const { sub: googleId, email, name } = payload;
 
-    let user = await User.findOne({ googleId });
-    if (!user) {
-      user = new User({ name, email, googleId });
-      await user.save();
+    const { resources: existingUsers } = await userContainer.items
+      .query({
+        query: "SELECT * FROM c WHERE c.googleId = @googleId",
+        parameters: [{ name: "@googleId", value: googleId }]
+      })
+      .fetchAll();
+
+    let user;
+    if (existingUsers.length === 0) {
+      const { resource: newUser } = await userContainer.items.create({ name, email, googleId });
+      user = newUser;
       
       // Send welcome email to user
       sendEmailNotification(
@@ -271,9 +324,11 @@ app.post('/api/verify-google-token', async (req, res) => {
         'New User Registration via Google',
         `<h1>New User Registered via Google</h1><p>A new user has registered:</p><p>Name: ${name}</p><p>Email: ${email}</p>`
       );
+    } else {
+      user = existingUsers[0];
     }
 
-    res.json({ userId: user._id, email, name });
+    res.json({ userId: user.id, email: user.email, name: user.name });
   } catch (error) {
     console.error('Error verifying Google token:', error);
     res.status(400).json({ error: 'Invalid token', details: error.message });
@@ -292,10 +347,5 @@ app.get('*', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  res.status(500).json({ error: 'An unexpected error occurred' });
 });

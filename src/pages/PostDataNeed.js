@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './PostDataNeed.css';
 import { sendNotificationEmail } from '../services/emailService';
 
-const PostDataNeed = ({ onSubmitSuccess }) => {
-  const navigate = useNavigate();
+const PostDataNeed = ({ customNavigate }) => {
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
     description: '',
@@ -27,9 +25,9 @@ const PostDataNeed = ({ onSubmitSuccess }) => {
       setUserData(JSON.parse(storedUserData));
     } else {
       // If no user data is found, redirect to login page
-      navigate('/register-datarequester');
+      customNavigate('/register-datarequester');
     }
-  }, [navigate]);
+  }, [customNavigate]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -66,7 +64,7 @@ const PostDataNeed = ({ onSubmitSuccess }) => {
       .then(async (data) => {
         console.log('Form data submitted: ', data);
         await sendNotificationEmail('New Data Posted');
-        navigate('/register-datarequester');
+        customNavigate('/thank-you-submit');
       })
       .catch((error) => {
         console.error('Form submission error: ', error);

@@ -94,7 +94,7 @@ const Home = () => {
             name="from_name"
             value={contactData.from_name}
             onChange={handleContactChange}
-            placeholder="Your name (sender)"
+            placeholder="Your name"
             required
           />
           <input
