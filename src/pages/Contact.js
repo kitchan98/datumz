@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { FaPhone, FaMapMarkerAlt, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaPhone, FaMapMarkerAlt, FaCheckCircle, FaExclamationCircle, FaEnvelope } from 'react-icons/fa';
 import emailjs from 'emailjs-com';
 import './Contact.css';
 
@@ -117,6 +117,10 @@ const Contact = () => {
           <div className="info-item">
             <FaPhone />
             <p>+44 (0)7916130306</p>
+          </div>
+          <div className="info-item">
+            <FaEnvelope />
+            <p>kit@datumz.co</p>
           </div>
           <div className="info-item">
             <FaMapMarkerAlt />

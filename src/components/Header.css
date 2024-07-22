@@ -9,7 +9,7 @@
 }
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: 500;
   letter-spacing: 2px;
   white-space: nowrap; /* Prevent logo text from wrapping */
@@ -40,7 +40,7 @@ nav a {
   color: #fff;
   text-decoration: none;
   margin-left: 1rem; /* Reduced margin */
-  font-size: 0.9rem; /* Slightly reduced font size */
+  font-size: 1.1rem; /* Slightly reduced font size */
   letter-spacing: 1px;
   font-weight: 500;
   white-space: nowrap; /* Prevent nav text from wrapping */

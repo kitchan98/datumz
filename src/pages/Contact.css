@@ -94,6 +94,27 @@
   display: flex;
   justify-content: center;
   gap: 40px;
+  flex-wrap: wrap;
+}
+
+.contact-page .info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .contact-page .contact-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.contact-page .contact-info {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
 }
 
 .contact-page .info-item {
