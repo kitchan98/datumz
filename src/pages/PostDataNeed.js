@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './PostDataNeed.css';
-import { sendNotificationEmail } from '../services/emailService';
 
 const PostDataNeed = ({ customNavigate }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +34,7 @@ const PostDataNeed = ({ customNavigate }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const storedUserData = localStorage.getItem('user');
@@ -58,28 +57,39 @@ const PostDataNeed = ({ customNavigate }) => {
       formDataToSend.append('userData', JSON.stringify(userData));
     }
 
-    fetch('http://localhost:5001/api/form-submit', {
-      method: 'POST',
-      body: formDataToSend,
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
-      })
-      .then(async (data) => {
-        console.log('Form data submitted: ', data);
-        await sendNotificationEmail('New Data Posted');
-        customNavigate('/thank-you-submit');
-      })
-      .catch((error) => {
-        console.error('Form submission error: ', error);
-        alert('Error submitting data need');
-      })
-      .finally(() => {
-        setIsLoading(false);
+    try {
+      const response = await fetch('/.netlify/functions/submit-data-need', {
+        method: 'POST',
+        body: formDataToSend,
       });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText);
+      }
+
+      const data = await response.json();
+      console.log('Form data submitted: ', data);
+
+      // Send notification email
+      await fetch('/.netlify/functions/send-notification-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subject: 'New Data Posted',
+          email: userData.email,
+          name: userData.name,
+        }),
+      });
+
+      customNavigate('/thank-you-submit');
+    } catch (error) {
+      console.error('Form submission error: ', error);
+      alert('Error submitting data need');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

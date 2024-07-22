@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { sendNotificationEmail } from '../services/emailService';
 import './RegisterDataRequester.css';
 
 const RegisterDataRequester = () => {
@@ -24,7 +23,15 @@ const RegisterDataRequester = () => {
     const handleRegistration = async (userData) => {
         try {
             localStorage.setItem('user', JSON.stringify(userData));
-            await sendNotificationEmail('New User Registration (Data Requester)', userData.email, userData.name);
+            // Send notification email using Netlify function
+            await fetch('/.netlify/functions/send-notification-email', {
+                method: 'POST',
+                body: JSON.stringify({
+                    subject: 'New User Registration (Data Requester)',
+                    email: userData.email,
+                    name: userData.name
+                })
+            });
             navigate('/thank-you-submit');
         } catch (error) {
             console.error('Error during registration process:', error);
@@ -35,28 +42,30 @@ const RegisterDataRequester = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-        const endpoint = isLogin ? '/api/login' : '/api/register';
+        console.log('Form submitted with data:', formData);
+        
         try {
+            console.log('Sending registration request to server...');
+            const endpoint = isLogin ? '/.netlify/functions/login' : '/.netlify/functions/register';
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                  'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
             });
-
+    
+            console.log('Received response from server:', response);
+    
             if (!response.ok) {
-                throw new Error(isLogin ? 'Failed to login' : 'Failed to register user');
+                const errorData = await response.json();
+                throw new Error(errorData.message || (isLogin ? 'Failed to login' : 'Failed to register user'));
             }
-
+    
             const data = await response.json();
             console.log(isLogin ? 'Login successful:' : 'Registration successful:', data);
-
-            if (!isLogin) {
-                await handleRegistration({ userId: data.userId, email: formData.email, name: formData.name });
-            } else {
-                navigate('/thank-you-submit'); // or wherever you want to redirect after login
-            }
+    
+            await handleRegistration({ userId: data.userId, email: formData.email, name: formData.name });
         } catch (error) {
             console.error(isLogin ? 'Error during login:' : 'Error during registration:', error);
             setError(error.message);
@@ -66,7 +75,7 @@ const RegisterDataRequester = () => {
     const handleGoogleSuccess = async (credentialResponse) => {
         setError(null);
         try {
-            const response = await fetch('http://localhost:5001/api/verify-google-token', {
+            const response = await fetch('/.netlify/functions/verify-google-token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

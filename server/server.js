@@ -250,8 +250,10 @@ app.post('/api/form-submit', upload.single('sampleFile'), async (req, res) => {
 });
 
 app.post('/api/register', async (req, res) => {
+  console.log('Received registration request:', req.body);
   try {
     const { name, email, password } = req.body;
+    console.log('Checking for existing user...');
     const { resources: existingUsers } = await userContainer.items
       .query({
         query: "SELECT * FROM c WHERE c.email = @email",
@@ -260,21 +262,28 @@ app.post('/api/register', async (req, res) => {
       .fetchAll();
 
     if (existingUsers.length > 0) {
+      console.log('User already exists');
       return res.status(409).json({ message: 'User already exists' });
     }
 
+    console.log('Hashing password...');
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Creating new user...');
     const { resource: newUser } = await userContainer.items.create({ name, email, password: hashedPassword });
     
+    console.log('User created successfully:', newUser.id);
+    
     // Send welcome email to user
-    sendEmailNotification(
+    console.log('Sending welcome email...');
+    await sendEmailNotification(
       email,
       'Welcome to Our Platform!',
       `<h1>Welcome, ${name}!</h1><p>Thank you for registering with our platform. We're excited to have you on board!</p>`
     );
 
     // Notify developer
-    sendEmailNotification(
+    console.log('Sending notification to developer...');
+    await sendEmailNotification(
       process.env.DEVELOPER_EMAIL,
       'New User Registration',
       `<h1>New User Registered</h1><p>A new user has registered:</p><p>Name: ${name}</p><p>Email: ${email}</p>`
@@ -283,7 +292,7 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({ message: 'User registered successfully', userId: newUser.id });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Error during registration' });
+    res.status(500).json({ message: 'Error during registration', error: error.toString() });
   }
 });
 
