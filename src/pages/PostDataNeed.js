@@ -24,11 +24,8 @@ const PostDataNeed = ({ customNavigate }) => {
     const storedUserData = localStorage.getItem('user');
     if (storedUserData) {
       setUserData(JSON.parse(storedUserData));
-    } else {
-      // If no user data is found, redirect to login page
-      customNavigate('/register-datarequester');
     }
-  }, [customNavigate]);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -40,6 +37,14 @@ const PostDataNeed = ({ customNavigate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    const storedUserData = localStorage.getItem('user');
+    if (!storedUserData) {
+      // If no user data is found, redirect to login page
+      customNavigate('/register-datarequester');
+      return;
+    }
+
     setIsLoading(true);
     const formDataToSend = new FormData();
     for (const key in formData) {
@@ -71,6 +76,9 @@ const PostDataNeed = ({ customNavigate }) => {
       .catch((error) => {
         console.error('Form submission error: ', error);
         alert('Error submitting data need');
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
