@@ -5,37 +5,45 @@
   padding: 1rem 2rem;
   background-color: #000;
   color: #fff;
+  flex-wrap: nowrap; /* Prevent wrapping */
 }
 
 .logo {
   font-size: 1.5rem;
   font-weight: 500;
   letter-spacing: 2px;
+  white-space: nowrap; /* Prevent logo text from wrapping */
 }
 
 .logo a {
   color: #3498db;
   text-decoration: none;
-  margin-right: 35px;
+  margin-right: 10px; /* Reduced margin */
 }
 
 .beta-tag {
-  font-size: 0.9rem;
+  font-size: 0.7rem; /* Reduced font size */
   background-color: #404040;
   color: #f39c12;
-  padding: 2px 5px;
+  padding: 2px 3px; /* Reduced padding */
   border-radius: 3px;
-  margin-left: 5px;
+  margin-left: 2px; /* Reduced margin */
   font-weight: 600;
+}
+
+nav {
+  display: flex;
+  align-items: center;
 }
 
 nav a {
   color: #fff;
   text-decoration: none;
-  margin-left: 1.5rem;
-  font-size: 1rem;
+  margin-left: 1rem; /* Reduced margin */
+  font-size: 0.9rem; /* Slightly reduced font size */
   letter-spacing: 1px;
   font-weight: 500;
+  white-space: nowrap; /* Prevent nav text from wrapping */
 }
 
 nav a:hover,
@@ -43,7 +51,6 @@ nav a.active {
   color: #3498db;
 }
 
-/* Existing styles... */
 
 .how-it-works {
   padding: 4rem 2rem;
@@ -107,28 +114,21 @@ nav a.active {
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  .steps {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .step {
-    max-width: 100%;
-  }
-}
-
 @media (max-width: 480px) {
   .header {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 0.5rem 1rem; /* Reduced padding */
   }
 
-  nav {
-    margin-top: 0.5rem;
+  .logo {
+    font-size: 1.2rem; /* Reduced font size */
   }
 
-  nav a:first-child {
-    margin-left: 0;
+  .beta-tag {
+    font-size: 0.6rem; /* Further reduced font size */
+  }
+
+  nav a {
+    font-size: 0.8rem; /* Further reduced font size */
+    margin-left: 0.5rem; /* Further reduced margin */
   }
 }
