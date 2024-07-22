@@ -3,6 +3,7 @@ import './PostDataNeed.css';
 import { sendNotificationEmail } from '../services/emailService';
 
 const PostDataNeed = ({ customNavigate }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
     description: '',
@@ -39,6 +40,7 @@ const PostDataNeed = ({ customNavigate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const formDataToSend = new FormData();
     for (const key in formData) {
       if (formData[key]) {
@@ -75,7 +77,7 @@ const PostDataNeed = ({ customNavigate }) => {
   return (
     <div className="pdn-container">
       <h2 className="pdn-heading">What Is Your Data Requirement?</h2>
-      
+
       <form onSubmit={handleSubmit} className="pdn-form">
         <div className="pdn-form-group">
           <label htmlFor="description" className="pdn-label">Description</label>
@@ -198,9 +200,18 @@ const PostDataNeed = ({ customNavigate }) => {
           </p>
         </div>
 
-        <button type="submit" className="pdn-btn pdn-btn-primary">
-          Submit Data Need
-        </button>
+        <div className="submit-button-container">
+          <button type="submit" className="pdn-btn pdn-btn-primary">
+            Submit Data Need
+          </button>
+          {isLoading && (
+            <div className="loading-overlay">
+              <div className="loading-content">
+                <div className="spinner"></div>
+              </div>
+            </div>
+          )}
+        </div>
       </form>
     </div>
   );
