@@ -22,20 +22,6 @@
   margin-bottom: 2rem;
 }
 
-.google-signin-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f7f9fa; /* Match your input field background */
-  border: 1px solid #e0e0e0; /* Match your input field border */
-  border-radius: 6px; /* Match your input field border-radius */
-}
-
-.google-signin-wrapper > div {
-  transform: scale(0.9); /* Slightly reduce the size of the Google button if needed */
-}
-
 .register-freelancer .divider {
   text-align: center;
   margin: 2rem 0;
@@ -136,6 +122,36 @@
 }
 
 .error-message {
-  color: red;
-  margin-bottom: 10px;
+  color: #e74c3c;
+  background-color: #fdf2f2;
+  border: 1px solid #e74c3c;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Google Sign-In Button Styles */
+.register-freelancer .social-sign-in button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #757575;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-freelancer .social-sign-in button:hover {
+  background-color: #f5f5f5;
+}
+
+.register-freelancer .social-sign-in button svg {
+  margin-right: 0.5rem;
 }

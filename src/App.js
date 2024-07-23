@@ -4,7 +4,6 @@ import emailjs from 'emailjs-com';
 import Home from './pages/Home';
 import PostDataNeed from './pages/PostDataNeed';
 import RegisterFreelancer from './pages/RegisterFreelancer';
-import RegisterDataRequester from './pages/RegisterDataRequester';
 import ThankYouRegister from './components/ThankYouRegister';
 import ThankYouSubmit from './components/ThankYouSubmit';
 import Wait from './components/Wait';
@@ -42,7 +41,6 @@ function AppContent() {
           <Route path="/" element={<Home customNavigate={customNavigate} />} />
           <Route path="/contact" element={<Contact customNavigate={customNavigate} />} />
           <Route path="/post-data-need" element={<PostDataNeed customNavigate={customNavigate} />} />
-          <Route path="/register-datarequester" element={<RegisterDataRequester customNavigate={customNavigate} />} />
           <Route path="/register-freelancer" element={<RegisterFreelancer customNavigate={customNavigate} />} />
           <Route path="/thank-you-register" element={<ThankYouRegister customNavigate={customNavigate} />} />
           <Route path="/thank-you-submit" element={<ThankYouSubmit customNavigate={customNavigate} />} />

@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import './RegisterDataRequester.css';
+import './RegisterFreelancer.css';
 
-const RegisterDataRequester = () => {
+const RegisterFreelancer = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
@@ -114,7 +114,7 @@ const RegisterDataRequester = () => {
 
     return (
         <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
-            <div className="register-datarequester">
+            <div className="register-freelancer">
                 <h2>{isLogin ? 'Login to Your Account' : 'Sign Up for an Account'}</h2>
                 <div className="social-sign-in">
                     <GoogleLogin
@@ -173,4 +173,4 @@ const RegisterDataRequester = () => {
     );
 };
 
-export default RegisterDataRequester;
+export default RegisterFreelancer;

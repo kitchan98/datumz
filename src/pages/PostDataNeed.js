@@ -43,17 +43,13 @@ const PostDataNeed = ({ customNavigate }) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
+  
+    const isLocalhost = window.location.hostname === 'localhost';
+    const endpoint = isLocalhost
+      ? `http://localhost:9999/.netlify/functions/submit-data-need`
+      : `/.netlify/functions/submit-data-need`;
+  
     try {
-      if (!userData) {
-        setError("Please sign in or register to submit your data need.");
-        const authSection = document.querySelector('.pdn-auth-section');
-        if (authSection) {
-          authSection.scrollIntoView({ behavior: 'smooth' });
-        }
-        return;
-      }
-
       const formDataToSend = new FormData();
       for (const key in formData) {
         if (formData[key] && !['name', 'email', 'password'].includes(key)) {
@@ -61,29 +57,29 @@ const PostDataNeed = ({ customNavigate }) => {
         }
       }
       formDataToSend.append('userData', JSON.stringify(userData));
-
-      const dataNeedResponse = await fetch('/.netlify/functions/submit-data-need', {
+  
+      const dataNeedResponse = await fetch(endpoint, {
         method: 'POST',
         body: formDataToSend,
       });
-
+  
       if (!dataNeedResponse.ok) {
         throw new Error('Network response was not ok ' + dataNeedResponse.statusText);
       }
-
+  
       const data = await dataNeedResponse.json();
       console.log('Form data submitted: ', data);
-
+  
       await fetch('/.netlify/functions/send-notification-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          subject: 'New Data Posted',
+          subject: 'Thank You for Your Submission',
           email: userData.email,
           name: userData.name,
         }),
       });
-
+  
       customNavigate('/thank-you-submit');
     } catch (error) {
       console.error('Form submission error: ', error);
@@ -92,14 +88,19 @@ const PostDataNeed = ({ customNavigate }) => {
       setIsLoading(false);
     }
   };
+  
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
+  
+    const isLocalhost = window.location.hostname === 'localhost';
+    const endpoint = isLocalhost
+      ? `http://localhost:9999/.netlify/functions/${isLogin ? 'login' : 'register'}`
+      : `/.netlify/functions/${isLogin ? 'login' : 'register'}`;
+  
     try {
-      const endpoint = isLogin ? '/.netlify/functions/login' : '/.netlify/functions/register';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -111,12 +112,12 @@ const PostDataNeed = ({ customNavigate }) => {
           password: formData.password,
         }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || (isLogin ? 'Failed to login' : 'Failed to register user'));
       }
-
+  
       const userData = await response.json();
       setUserData(userData);
       localStorage.setItem('user', JSON.stringify(userData));
@@ -127,7 +128,8 @@ const PostDataNeed = ({ customNavigate }) => {
       setIsLoading(false);
     }
   };
-
+  
+  
   const handleGoogleSuccess = async (credentialResponse) => {
     setError(null);
     try {
@@ -348,7 +350,7 @@ const PostDataNeed = ({ customNavigate }) => {
                 <button
                   type="button"
                   onClick={handleAuthSubmit}
-                  className="pdn-btn pdn-btn-primary"
+                  className="pdn-btn pdn-btn-primary1"
                   disabled={isLoading}
                 >
                   {isLogin ? 'Login' : 'Register'}
@@ -361,7 +363,7 @@ const PostDataNeed = ({ customNavigate }) => {
 
           <button
             type="submit"
-            className="pdn-btn pdn-btn-primary"
+            className="pdn-btn pdn-btn-primary2"
             disabled={isLoading || !userData}
           >
             {isLoading ? 'Submitting...' : 'Submit Data Need'}

@@ -2,3 +2,13 @@
   command = "npm run build"
   publish = "build"
   functions = "netlify/functions"
+
+[dev]
+  command = "npm start"
+  targetPort = 3000
+  port = 3001
+  functionsPort = 9999
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["nodemailer"]
