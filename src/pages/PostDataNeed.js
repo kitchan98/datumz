@@ -240,6 +240,10 @@ const PostDataNeed = ({ customNavigate }) => {
 
           {error && <div className="pdn-error-message">{error}</div>}
 
+          <div className="pdn-hint">
+            <p>Please fill out the form above and register/login before submitting your data need.</p>
+          </div>
+
           <button
             onClick={handleSubmit}
             className="pdn-btn pdn-btn-primary2"

@@ -214,3 +214,14 @@
   width: 18px;
   height: 18px;
 }
+
+.pdn-hint {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.pdn-hint p {
+  color: #666;
+  font-size: 0.9em;
+  font-style: italic;
+}

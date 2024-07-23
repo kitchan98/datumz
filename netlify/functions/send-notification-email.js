@@ -18,7 +18,20 @@ const sendEmail = async (to, subject, name) => {
     from: '"DatumZ" <kit@datumz.co>',
     to,
     subject,
-    html: `<p>Hello ${name}, thank you for your submission!</p>`,
+    html: `
+      <p>Hello ${userData.name},</p>
+      <p>Thank you for submitting your data need to our platform. We appreciate your interest and trust in our services.</p>
+      <p>Our team will carefully review your submission and get back to you shortly with more information or any additional questions we may have.</p>
+      <p>Here's a summary of your submission:</p>
+      <ul>
+        <li>Category: ${formData.category}</li>
+        <li>Type: ${formData.type}</li>
+        <li>Quantity: ${formData.quantity}</li>
+        <li>Frequency: ${formData.frequency}</li>
+      </ul>
+      <p>If you need to make any changes or have any questions, please don't hesitate to contact us.</p>
+      <p>Best regards,<br>Kit C</p>
+    `
   };
 
   try {

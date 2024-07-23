@@ -1,50 +1,62 @@
-.loading-overlay {
-  position: absolute;
+.loading-spinner-overlay {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(52, 152, 219, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 9999; /* Ensure it's on top of other elements */
 }
 
-.loading-content {
-  text-align: center;
-  color: white;
+.loading-spinner {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
 }
 
 .spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #ffffff;
+  position: absolute;
+  border: 4px solid #fff;
+  opacity: 1;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
+  animation: ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 
-.loading-text {
-  font-size: 16px;
-  margin-top: 10px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+.spinner:nth-child(2) {
+  animation-delay: -0.5s;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Add this new style for the submit button container */
-.submit-button-container {
-  position: relative;
-  width: fit-content;
-}
-
-/* Ensure the button stays on top of other elements except the loading overlay */
-.pdn-btn {
-  position: relative;
-  z-index: 1;
+@keyframes ripple {
+  0% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  4.9% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  5% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 72px;
+    height: 72px;
+    opacity: 0;
+  }
 }
