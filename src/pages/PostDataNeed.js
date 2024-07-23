@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import React, { useState, useEffect, useCallback } from 'react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import './PostDataNeed.css';
+import Auth from '../components/Auth'; // Ensure this path is correct
 
 const PostDataNeed = ({ customNavigate }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [authSuccessful, setAuthSuccessful] = useState(false);
   const [formData, setFormData] = useState({
     description: '',
     category: '',
@@ -15,19 +16,14 @@ const PostDataNeed = ({ customNavigate }) => {
     frequency: 'one-time',
     details: '',
     sampleFile: null,
-    name: '',
-    email: '',
-    password: '',
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
   const [error, setError] = useState(null);
 
+  // Load user data on component mount
   useEffect(() => {
     const storedUserData = localStorage.getItem('user');
     if (storedUserData) {
       setUserData(JSON.parse(storedUserData));
-      setIsLogin(true);
     }
   }, []);
 
@@ -39,37 +35,42 @@ const PostDataNeed = ({ customNavigate }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
+    if (!userData) {
+      setError('Please log in or register to submit a data need.');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
-  
+
     const isLocalhost = window.location.hostname === 'localhost';
     const endpoint = isLocalhost
       ? `http://localhost:9999/.netlify/functions/submit-data-need`
       : `/.netlify/functions/submit-data-need`;
-  
+
     try {
       const formDataToSend = new FormData();
       for (const key in formData) {
-        if (formData[key] && !['name', 'email', 'password'].includes(key)) {
+        if (formData[key]) {
           formDataToSend.append(key, formData[key]);
         }
       }
       formDataToSend.append('userData', JSON.stringify(userData));
-  
+
       const dataNeedResponse = await fetch(endpoint, {
         method: 'POST',
         body: formDataToSend,
       });
-  
+
       if (!dataNeedResponse.ok) {
         throw new Error('Network response was not ok ' + dataNeedResponse.statusText);
       }
-  
+
       const data = await dataNeedResponse.json();
       console.log('Form data submitted: ', data);
-  
+
       await fetch('/.netlify/functions/send-notification-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -79,7 +80,7 @@ const PostDataNeed = ({ customNavigate }) => {
           name: userData.name,
         }),
       });
-  
+
       customNavigate('/thank-you-submit');
     } catch (error) {
       console.error('Form submission error: ', error);
@@ -87,83 +88,21 @@ const PostDataNeed = ({ customNavigate }) => {
     } finally {
       setIsLoading(false);
     }
-  };
-  
+  }, [userData, formData, customNavigate]);
 
-  const handleAuthSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-  
-    const isLocalhost = window.location.hostname === 'localhost';
-    const endpoint = isLocalhost
-      ? `http://localhost:9999/.netlify/functions/${isLogin ? 'login' : 'register'}`
-      : `/.netlify/functions/${isLogin ? 'login' : 'register'}`;
-  
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || (isLogin ? 'Failed to login' : 'Failed to register user'));
-      }
-  
-      const userData = await response.json();
-      setUserData(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-    } catch (error) {
-      console.error('Authentication error:', error);
-      setError(error.message || 'Failed to authenticate');
-    } finally {
-      setIsLoading(false);
+  // Handle automatic form submission after successful authentication
+  useEffect(() => {
+    if (authSuccessful && userData) {
+      handleSubmit(new Event('submit'));
+      setAuthSuccessful(false);
     }
-  };
-  
-  
-  const handleGoogleSuccess = async (credentialResponse) => {
-    setError(null);
-    try {
-      const response = await fetch('/.netlify/functions/verify-google-token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: credentialResponse.credential }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to verify Google token: ${response.status} ${response.statusText}`);
-      }
-
-      const userData = await response.json();
-      setUserData(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-    } catch (error) {
-      console.error('Error during Google sign-in:', error);
-      setError('Google sign-in failed. Please try again.');
-    }
-  };
-
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  const toggleLoginRegister = () => {
-    setIsLogin(!isLogin);
-    setError(null);
-  };
+  }, [authSuccessful, userData, handleSubmit]);
 
   return (
-
     <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
       <div className="pdn-container">
         <h2 className="pdn-heading">What Is Your Data Requirement?</h2>
-        <form onSubmit={handleSubmit} className="pdn-form">
+        <div className="pdn-form">
           <div className="pdn-form-group">
             <label htmlFor="description" className="pdn-label">Description</label>
             <textarea
@@ -284,91 +223,31 @@ const PostDataNeed = ({ customNavigate }) => {
 
           <div className="pdn-auth-section">
             <h3>Account Information</h3>
-            {userData ? (
-              <p>Logged in as: {userData.name} ({userData.email})</p>
-            ) : (
-              <>
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => setError('Google sign-in failed. Please try again.')}
-                />
-                <div className="pdn-divider">Or</div>
-                {!isLogin && (
-                  <div className="pdn-form-group">
-                    <label htmlFor="name" className="pdn-label">Full Name</label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="pdn-input"
-                      required={!isLogin}
-                    />
-                  </div>
-                )}
-                <div className="pdn-form-group">
-                  <label htmlFor="email" className="pdn-label">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="pdn-input"
-                    required
-                  />
-                </div>
-                <div className="pdn-form-group">
-                  <label htmlFor="password" className="pdn-label">Password</label>
-                  <div className="pdn-password-input">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      id="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="pdn-input"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={togglePasswordVisibility}
-                      className="pdn-password-toggle"
-                    >
-                      {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={toggleLoginRegister}
-                  className="pdn-btn pdn-btn-secondary"
-                >
-                  {isLogin ? 'Need an account? Sign Up' : 'Already have an account? Login'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAuthSubmit}
-                  className="pdn-btn pdn-btn-primary1"
-                  disabled={isLoading}
-                >
-                  {isLogin ? 'Login' : 'Register'}
-                </button>
-              </>
-            )}
+            <Auth
+              userData={userData}
+              setUserData={(user) => {
+                setUserData(user);
+                localStorage.setItem('user', JSON.stringify(user));
+                setAuthSuccessful(true);
+              }}
+              onAuthSuccess={(user) => {
+                setUserData(user);
+                localStorage.setItem('user', JSON.stringify(user));
+                setAuthSuccessful(true);
+              }}
+            />
           </div>
 
           {error && <div className="pdn-error-message">{error}</div>}
 
           <button
-            type="submit"
+            onClick={handleSubmit}
             className="pdn-btn pdn-btn-primary2"
             disabled={isLoading || !userData}
           >
             {isLoading ? 'Submitting...' : 'Submit Data Need'}
           </button>
-        </form>
+        </div>
       </div>
     </GoogleOAuthProvider>
   );

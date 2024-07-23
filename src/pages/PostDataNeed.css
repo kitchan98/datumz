@@ -28,6 +28,7 @@
   color: #333333;
   font-weight: 600;
   font-size: 1rem;
+  margin-bottom: 0.3rem;
 }
 
 .pdn-input,
@@ -103,14 +104,6 @@
 
 .pdn-auth-section {
   margin-top: 1rem;
-  border-top: 1px solid #eee;
-  padding-top: 1rem;
-}
-
-.pdn-auth-section h3 {
-  color: #333333;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
 }
 
 .pdn-divider {
