@@ -3,56 +3,63 @@ const { CosmosClient } = require('@azure/cosmos');
 const multipart = require('multipart-formdata');
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
-  }
-
-  try {
-    // Parse the multipart form data
-    const formData = await parseMultipartForm(event);
-
-    // Set up Azure clients
-    const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
-    const containerClient = blobServiceClient.getContainerClient(process.env.BLOB_CONTAINER_NAME);
-
-    const cosmosClient = new CosmosClient({
-      endpoint: process.env.COSMOS_ENDPOINT,
-      key: process.env.COSMOS_KEY
-    });
-    const database = cosmosClient.database(process.env.COSMOS_DATABASE);
-    const container = database.container('dataneeds');
-
-    // Handle file upload if present
-    let fileUrl = null;
-    if (formData.sampleFile) {
-      const blobName = `${Date.now()}-${formData.sampleFile.filename}`;
-      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-      await blockBlobClient.upload(formData.sampleFile.content, formData.sampleFile.content.length);
-      fileUrl = blockBlobClient.url;
+    if (event.httpMethod !== 'POST') {
+      return { statusCode: 405, body: 'Method Not Allowed' };
     }
-
-    // Prepare data for Cosmos DB
-    const dataToStore = {
-      ...formData,
-      sampleFile: fileUrl,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Store in Cosmos DB
-    const { resource: createdItem } = await container.items.create(dataToStore);
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Data need submitted successfully', id: createdItem.id })
-    };
-  } catch (error) {
-    console.error('Error submitting data need:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: 'Error submitting data need', error: error.toString() })
-    };
-  }
-};
+  
+    try {
+      console.log('Received event:', event);
+      
+      // Parse the multipart form data
+      const formData = await parseMultipartForm(event);
+      console.log('Parsed form data:', formData);
+  
+      // Set up Azure clients
+      const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
+      const containerClient = blobServiceClient.getContainerClient(process.env.BLOB_CONTAINER_NAME);
+  
+      const cosmosClient = new CosmosClient({
+        endpoint: process.env.COSMOS_ENDPOINT,
+        key: process.env.COSMOS_KEY
+      });
+      const database = cosmosClient.database(process.env.COSMOS_DATABASE);
+      const container = database.container('dataneeds');
+  
+      // Handle file upload if present
+      let fileUrl = null;
+      if (formData.sampleFile) {
+        console.log('Uploading file:', formData.sampleFile.filename);
+        const blobName = `${Date.now()}-${formData.sampleFile.filename}`;
+        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+        await blockBlobClient.upload(formData.sampleFile.content, formData.sampleFile.content.length);
+        fileUrl = blockBlobClient.url;
+        console.log('File uploaded successfully. URL:', fileUrl);
+      }
+  
+      // Prepare data for Cosmos DB
+      const dataToStore = {
+        ...formData,
+        sampleFile: fileUrl,
+        createdAt: new Date().toISOString(),
+      };
+      console.log('Data to store in Cosmos DB:', dataToStore);
+  
+      // Store in Cosmos DB
+      const { resource: createdItem } = await container.items.create(dataToStore);
+      console.log('Item created in Cosmos DB:', createdItem);
+  
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Data need submitted successfully', id: createdItem.id })
+      };
+    } catch (error) {
+      console.error('Error submitting data need:', error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ message: 'Error submitting data need', error: error.toString() })
+      };
+    }
+  };
 
 // Helper function to parse multipart form data
 async function parseMultipartForm(event) {
